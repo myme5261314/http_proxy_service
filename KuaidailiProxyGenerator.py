@@ -13,9 +13,10 @@ This is the generator for website http://www.kuaidaili.com/proxylist/[1-10]
 import time
 import requests as rs
 from bs4 import BeautifulSoup as bs
-from multiprocessing import Pool
+from multiprocessing.pool import ThreadPool
 from BaseProxyGenerator import BaseProxyGenerator
 from BaseProxy import BaseProxy
+import random
 
 
 def wrapper(infos):
@@ -32,14 +33,22 @@ class KuaidailiProxyGenerator(BaseProxyGenerator):
         super(KuaidailiProxyGenerator, self).__init__(
             [template % i for i in xrange(1, 11)])
 
-    def _extract(self, url):
-        """TODO: Docstring for gather.
-
+    @staticmethod
+    def extract(url):
+        """TODO: Docstring for extract.
         :returns: TODO
 
         """
-        soup = bs(rs.get(url).text, 'html.parser')
-        tr_list = soup.tbody.find_all('tr')
+        try:
+            sleep_time = random.uniform(0, 3)
+            print sleep_time
+            time.sleep(sleep_time)
+            r = rs.get(url)
+            soup = bs(r.text, 'html.parser')
+            tr_list = soup.tbody.find_all('tr')
+        except AttributeError:
+            print r
+            return None
         info_list = []
         for tr in tr_list:
             td_list = tr.find_all('td')
@@ -55,13 +64,12 @@ class KuaidailiProxyGenerator(BaseProxyGenerator):
                 else:
                     infos.append(float(td_list[7].text[:-3]) * 60)
                 info_list.append(infos)
-        p = Pool(len(info_list))
+        p = ThreadPool(len(info_list))
         start = time.time()
         proxy_list = p.map(wrapper, info_list)
+        p.close()
         print time.time() - start
-        for proxy in proxy_list:
-            if proxy.get_status():
-                yield proxy
+        return proxy_list
 
 
 def main():

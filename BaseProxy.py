@@ -30,7 +30,7 @@ class BaseProxy(object):
         self.data_dict['verify_time'] = time.time() - float(content_list[3])
         self.data_dict['hash'] = self.data_dict[
             'ip'] + ":" + str(self.data_dict['port'])
-        self.check()
+        self.data_dict['usable'] = False
 
     def check(self):
         """Check whether proxy server is usable.
