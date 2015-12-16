@@ -13,10 +13,9 @@ This is the generator for website http://www.kuaidaili.com/proxylist/[1-10]
 import time
 import requests as rs
 from bs4 import BeautifulSoup as bs
-from multiprocessing.pool import ThreadPool
+from multiprocessing.pool import ThreadPool as Pool
 from BaseProxyGenerator import BaseProxyGenerator
 from BaseProxy import BaseProxy
-import random
 
 
 def wrapper(infos):
@@ -30,8 +29,8 @@ class KuaidailiProxyGenerator(BaseProxyGenerator):
     def __init__(self):
         """TODO: to be defined1. """
         template = 'http://www.kuaidaili.com/proxylist/%d'
-        super(KuaidailiProxyGenerator, self).__init__(
-            [template % i for i in xrange(1, 11)])
+        super(KuaidailiProxyGenerator, self).__init__()
+        self.base_url = [template % i for i in xrange(1, 11)]
 
     @staticmethod
     def extract(url):
@@ -40,9 +39,6 @@ class KuaidailiProxyGenerator(BaseProxyGenerator):
 
         """
         try:
-            sleep_time = random.uniform(0, 3)
-            print sleep_time
-            time.sleep(sleep_time)
             r = rs.get(url)
             soup = bs(r.text, 'html.parser')
             tr_list = soup.tbody.find_all('tr')
@@ -64,7 +60,7 @@ class KuaidailiProxyGenerator(BaseProxyGenerator):
                 else:
                     infos.append(float(td_list[7].text[:-3]) * 60)
                 info_list.append(infos)
-        p = ThreadPool(len(info_list))
+        p = Pool(len(info_list))
         start = time.time()
         proxy_list = p.map(wrapper, info_list)
         p.close()

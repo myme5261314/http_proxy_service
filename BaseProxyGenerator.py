@@ -10,7 +10,9 @@
 This is the abstract class for the proxy server info gather.
 """
 
-from multiprocessing import Pool
+import time
+import threading
+from multiprocessing.pool import ThreadPool as Pool
 import itertools
 
 
@@ -21,10 +23,13 @@ def proxy_check(proxy):
 def url_extract(pair_list):
     p_self = pair_list[0]
     url = pair_list[1]
-    return [proxy for proxy in p_self.extract(url) if proxy is not None]
+    p_self.lock.acquire()
+    result = [proxy for proxy in p_self.extract(url) if proxy is not None]
+    p_self.lock.release()
+    return result
 
 
-class BaseProxyGenerator(object):
+class BaseProxyGenerator(threading.Thread):
 
     """Define Some data variables and common operations for various kinds of
     proxy generators."""
@@ -34,8 +39,25 @@ class BaseProxyGenerator(object):
         :url: this is the link to gather information of proxies.
 
         """
+        threading.Thread.__init__(self)
+        self.lock = threading.Lock()
         self.base_url = url_list
         self.proxy_dict = dict()
+
+    def run(self):
+        """TODO: Docstring for run.
+        :returns: TODO
+
+        """
+        while True:
+            try:
+                self.gather()
+            except Exception as e:
+                print e
+            print 'proxy dict is %s' % (self.get())
+            print 'Start of sleep'
+            time.sleep(3)
+            print 'End of sleep'
 
     def gather(self):
         """Convert the gathered data and stored in the instance.

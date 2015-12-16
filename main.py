@@ -19,25 +19,6 @@ import random
 from KuaidailiProxyGenerator import KuaidailiProxyGenerator
 
 k = KuaidailiProxyGenerator()
-print k
-
-
-# @tornado.gen.coroutine
-# @tornado.web.asynchronous
-def auto_loop():
-    """TODO: Docstring for auto_loop.
-    :returns: TODO
-
-    """
-    while True:
-        try:
-            k.gather()
-        except Exception as e:
-            print e
-        print 'loop k is: %s, dict is: %s, %s' % (k, str(hex(id(k.get()))), k.get())
-        print 'Start of sleep'
-        time.sleep(60)
-        print 'End of sleep'
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -76,6 +57,5 @@ def make_app():
 if __name__ == "__main__":
     app = make_app()
     app.listen(8888)
-    p = Thread(target=auto_loop)
-    p.start()
+    k.start()
     tornado.ioloop.IOLoop.current().start()
