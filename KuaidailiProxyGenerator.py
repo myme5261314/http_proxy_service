@@ -10,7 +10,6 @@
 This is the generator for website http://www.kuaidaili.com/proxylist/[1-10]
 """
 
-import time
 import requests as rs
 from bs4 import BeautifulSoup as bs
 from multiprocessing.pool import ThreadPool as Pool
@@ -61,10 +60,8 @@ class KuaidailiProxyGenerator(BaseProxyGenerator):
                     infos.append(float(td_list[7].text[:-3]) * 60)
                 info_list.append(infos)
         p = Pool(len(info_list))
-        start = time.time()
         proxy_list = p.map(wrapper, info_list)
         p.close()
-        print time.time() - start
         return proxy_list
 
 

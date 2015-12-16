@@ -17,8 +17,10 @@ from threading import Thread
 import random
 
 from KuaidailiProxyGenerator import KuaidailiProxyGenerator
+from XicidailiProxyGenerator import XicidailiProxyGenerator
 
 k = KuaidailiProxyGenerator()
+x = XicidailiProxyGenerator()
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -58,4 +60,5 @@ if __name__ == "__main__":
     app = make_app()
     app.listen(8888)
     k.start()
+    x.start()
     tornado.ioloop.IOLoop.current().start()

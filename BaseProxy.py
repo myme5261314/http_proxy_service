@@ -45,16 +45,14 @@ class BaseProxy(object):
             url = 'http://www.baidu.com'
             start = time.time()
             try:
-                soup = bs(
-                    rs.get(url, timeout=3,
-                           proxies={'http': 'http://%s:%d' % (
-                               self.data_dict['ip'],
-                               self.data_dict['port'])}).text,
-                    'html.parser')
-            except rs.exceptions.Timeout:
-                self.data_dict['usable'] = False
-                return False
-            except rs.exceptions.ConnectionError:
+                r = rs.get(url, timeout=3, proxies={
+                           'http': 'http://%s:%d' % (
+                               self.data_dict['ip'], self.data_dict['port'])})
+                if r.status_code != 200 or r.reason != 'OK':
+                    self.data_dict['usable'] = False
+                    return False
+                soup = bs(r.text, 'html.parser')
+            except rs.exceptions.RequestException:
                 self.data_dict['usable'] = False
                 return False
             if soup.title.text != u'百度一下，你就知道':
