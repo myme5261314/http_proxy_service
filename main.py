@@ -30,7 +30,10 @@ def auto_loop():
 
     """
     while True:
-        k.gather()
+        try:
+            k.gather()
+        except Exception as e:
+            print e
         print 'loop k is: %s, dict is: %s, %s' % (k, str(hex(id(k.get()))), k.get())
         print 'Start of sleep'
         time.sleep(60)
