@@ -22,8 +22,6 @@ class BaseProxy(object):
     def __init__(self, content_list):
         """TODO: to be defined1. """
         self.data_dict = dict()
-        # Make sure the 'hash' and 'usable' entries are always the first two
-        # entry of the list.
         self.data_dict['ip'] = content_list[0]
         self.data_dict['port'] = int(content_list[1])
         self.data_dict['response_time'] = float(content_list[2])
