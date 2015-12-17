@@ -38,32 +38,27 @@ class BaseProxy(object):
         :returns: True for usable and False for unusable.
 
         """
-        if self.data_dict['response_time'] > 3:
+        url = 'http://www.baidu.com'
+        valid_text = u'百度一下，你就知道'
+        start = time.time()
+        try:
+            r = rs.get(url, timeout=5, proxies={'http': self.get_proxy_link()})
+        except rs.exceptions.RequestException:
+            self.data_dict['usable'] = False
+            return False
+        response_time = time.time() - start
+        if response_time > 3 or r.status_code != 200 or r.reason != 'OK':
+            self.data_dict['usable'] = False
+            return False
+        soup = bs(r.text, 'html.parser')
+        if soup.title.text != valid_text:
             self.data_dict['usable'] = False
             return False
         else:
-            url = 'http://www.baidu.com'
-            start = time.time()
-            try:
-                r = rs.get(url, timeout=3, proxies={
-                           'http': 'http://%s:%d' % (
-                               self.data_dict['ip'], self.data_dict['port'])})
-                if r.status_code != 200 or r.reason != 'OK':
-                    self.data_dict['usable'] = False
-                    return False
-                soup = bs(r.text, 'html.parser')
-            except rs.exceptions.RequestException:
-                self.data_dict['usable'] = False
-                return False
-            if soup.title.text != u'百度一下，你就知道':
-                self.data_dict['usable'] = False
-                return False
-            else:
-                print self.data_dict['ip'] + ':' + str(self.data_dict['port'])
-                self.data_dict['usable'] = True
-                self.data_dict['response_time'] = time.time() - start
-                print self.data_dict['response_time']
-                return True
+            self.data_dict['usable'] = True
+            self.data_dict['response_time'] = response_time
+            self.data_dict['verify_time'] = time.time()
+            return True
 
     def get_status(self):
         """TODO: Docstring for get_status.
@@ -72,3 +67,10 @@ class BaseProxy(object):
 
         """
         return self.data_dict['usable']
+
+    def get_proxy_link(self):
+        """return the link string for proxy to use.
+        :returns: TODO
+
+        """
+        return 'http://%s:%d' % (self.data_dict['ip'], self.data_dict['port'])
