@@ -9,25 +9,18 @@
 """
 
 """
-import time
 import tornado.ioloop
 import tornado.web
 import requests
-from threading import Thread
 import random
 
 from KuaidailiProxyGenerator import KuaidailiProxyGenerator
 from XicidailiProxyGenerator import XicidailiProxyGenerator
 
-k = KuaidailiProxyGenerator()
-x = XicidailiProxyGenerator()
-
 
 class MainHandler(tornado.web.RequestHandler):
 
-    # @tornado.web.asynchronous
     def get(self):
-        print 'get k is: %s, dict is: %s, %s' % (k, str(hex(id(k.get()))), k.get())
         used_proxy = random.choice(k.get().values()).data_dict['hash']
         print 'Used proxy: %s' % used_proxy
         b = requests.get('http://www.baidu.com',
@@ -59,6 +52,8 @@ def make_app():
 if __name__ == "__main__":
     app = make_app()
     app.listen(8888)
+    k = KuaidailiProxyGenerator()
+    x = XicidailiProxyGenerator()
     k.start()
     x.start()
     tornado.ioloop.IOLoop.current().start()
