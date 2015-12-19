@@ -56,7 +56,7 @@ class BaseProxyGenerator(threading.Thread):
                 print e
             print 'proxy dict is %s' % (self.get())
             print 'Start of sleep'
-            time.sleep(3)
+            time.sleep(30)
             print 'End of sleep'
 
     def gather(self):

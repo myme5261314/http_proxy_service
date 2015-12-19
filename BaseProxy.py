@@ -49,7 +49,7 @@ class BaseProxy(object):
             self.data_dict['usable'] = False
             return False
         soup = bs(r.text, 'html.parser')
-        if soup.title.text != valid_text:
+        if soup.title == None or soup.title.text != valid_text:
             self.data_dict['usable'] = False
             return False
         else:

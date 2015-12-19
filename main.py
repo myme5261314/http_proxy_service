@@ -43,10 +43,23 @@ class BookHandler(tornado.web.RequestHandler):
         self.write(b.text.encode('utf-8'))
 
 
+class LinkHandler(tornado.web.RequestHandler):
+
+    """handle url."""
+
+    def get(self, url):
+        """TODO: to be defined1. """
+        used_proxy = random.choice(k.get().values())
+        used_proxy = used_proxy.data_dict['hash']
+        b = requests.get(url, proxies={'http': 'http://' + used_proxy})
+        self.write(b.text.encode('utf-8'))
+
+
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
-        (r"/book/([0-9]+)", BookHandler)
+        (r"/book/([0-9]+)", BookHandler),
+        (r"/(http://.+)", LinkHandler)
     ])
 
 if __name__ == "__main__":
